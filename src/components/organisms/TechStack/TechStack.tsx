@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@/components/atoms';
 import { TechStack as TechStackType } from '@/types';
 import { TECH_STACK } from '@/utils/constants';
@@ -18,49 +17,30 @@ const TechStack: React.FC<TechStackProps> = ({ className = '' }) => {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  const techStackClasses = [
-    styles.techStack,
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  // Detect touch device
   useEffect(() => {
-    const checkTouchDevice = () => {
-      setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
-    };
-    
-    checkTouchDevice();
-    window.addEventListener('resize', checkTouchDevice);
-    
-    return () => window.removeEventListener('resize', checkTouchDevice);
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    updateScrollButtons();
   }, []);
 
-  // Check scroll position for navigation buttons
-  useEffect(() => {
-    const checkScrollPosition = () => {
-      if (carouselRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-        setCanScrollLeft(scrollLeft > 0);
-        setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
-      }
-    };
-
-    checkScrollPosition();
-    const carousel = carouselRef.current;
-    if (carousel) {
-      carousel.addEventListener('scroll', checkScrollPosition);
-      window.addEventListener('resize', checkScrollPosition);
+  const updateScrollButtons = () => {
+    if (carouselRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
     }
+  };
 
-    return () => {
-      if (carousel) {
-        carousel.removeEventListener('scroll', checkScrollPosition);
-      }
-      window.removeEventListener('resize', checkScrollPosition);
-    };
-  }, []);
+  const scrollLeft = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
 
   const handleCardClick = (techId: string) => {
     if (isTouchDevice) {
@@ -68,179 +48,124 @@ const TechStack: React.FC<TechStackProps> = ({ className = '' }) => {
     }
   };
 
-  const handleCardHover = (techId: string, isHovering: boolean) => {
+  const handleCardMouseEnter = (techId: string) => {
     if (!isTouchDevice) {
-      setFlippedCard(isHovering ? techId : null);
+      setFlippedCard(techId);
     }
   };
 
-  const scrollCarousel = (direction: 'left' | 'right') => {
-    if (carouselRef.current) {
-      const scrollAmount = 300; // Adjust based on card width + gap
-      const newScrollLeft = carouselRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
-      
-      carouselRef.current.scrollTo({
-        left: newScrollLeft,
-        behavior: 'smooth'
-      });
+  const handleCardMouseLeave = () => {
+    if (!isTouchDevice) {
+      setFlippedCard(null);
     }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent, techId: string) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      handleCardClick(techId);
-    }
-  };
+  const techStackClasses = [
+    styles.techStack,
+    className,
+  ].filter(Boolean).join(' ');
 
   return (
     <section id="tech-stack" className={techStackClasses}>
       <div className={styles.techStack__container}>
-        <motion.div
-          className={styles.techStack__header}
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
+        <div className={styles.techStack__header}>
           <h2 className={styles.techStack__title}>Tech Stack</h2>
           <p className={styles.techStack__subtitle}>
-            Technologies and tools I use to bring ideas to life
+            Technologies and tools I work with
           </p>
-        </motion.div>
+        </div>
 
-        <div className={styles.techStack__carouselWrapper}>
-          {/* Left scroll button */}
-          {canScrollLeft && (
-            <button
-              className={styles.techStack__scrollButton}
-              onClick={() => scrollCarousel('left')}
-              aria-label="Scroll left"
-              type="button"
-            >
-              <Icon name="ChevronLeft" size="lg" />
-            </button>
-          )}
+        <div className={styles.techStack__carousel}>
+          <button
+            className={`${styles.techStack__scrollButton} ${styles['techStack__scrollButton--left']}`}
+            onClick={scrollLeft}
+            disabled={!canScrollLeft}
+            aria-label="Scroll left"
+          >
+            <Icon name="ChevronLeft" size="lg" />
+          </button>
 
-          <div className={styles.techStack__carousel}>
-            <div 
-              ref={carouselRef}
-              className={styles.techStack__track}
-              role="region"
-              aria-label="Technology stack carousel"
-              tabIndex={0}
-            >
-              {TECH_STACK.map((tech, index) => (
-                <motion.div
-                  key={tech.id}
-                  className={styles.techStack__card}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  onHoverStart={() => handleCardHover(tech.id, true)}
-                  onHoverEnd={() => handleCardHover(tech.id, false)}
-                  onClick={() => handleCardClick(tech.id)}
-                  onKeyDown={(e) => handleKeyDown(e, tech.id)}
-                  tabIndex={0}
-                  role="button"
-                  aria-label={`${tech.name} - ${tech.shortDescription}. Click to see more details.`}
-                  aria-pressed={flippedCard === tech.id}
-                >
-                  <div className={styles.techStack__cardInner}>
-                    {/* Front of card */}
-                    <motion.div
-                      className={styles.techStack__cardFront}
-                      animate={{
-                        rotateY: flippedCard === tech.id ? 180 : 0,
-                      }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      <div className={styles.techStack__cardContent}>
-                        <div className={styles.techStack__logo}>
-                          <Icon name="Code" size="xl" />
+          <div
+            ref={carouselRef}
+            className={styles.techStack__track}
+            onScroll={updateScrollButtons}
+          >
+            <div className={styles.techStack__cards}>
+              {TECH_STACK.map((tech) => {
+                const isFlipped = flippedCard === tech.id;
+                const cardClasses = [
+                  styles.techStack__card,
+                  isFlipped && styles['techStack__card--flipped'],
+                ].filter(Boolean).join(' ');
+
+                return (
+                  <div
+                    key={tech.id}
+                    className={cardClasses}
+                    onClick={() => handleCardClick(tech.id)}
+                    onMouseEnter={() => handleCardMouseEnter(tech.id)}
+                    onMouseLeave={handleCardMouseLeave}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${tech.name} - ${isFlipped ? 'Flipped' : 'Click to flip'}`}
+                    aria-pressed={isFlipped}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleCardClick(tech.id);
+                      }
+                    }}
+                  >
+                    <div className={styles.techStack__cardFront}>
+                      <div className={styles.techStack__cardIcon}>
+                        <Icon name={tech.icon} size="xl" />
+                      </div>
+                      <h3 className={styles.techStack__cardTitle}>{tech.name}</h3>
+                      <p className={styles.techStack__cardDescription}>
+                        {tech.shortDescription}
+                      </p>
+                      {isTouchDevice && (
+                        <div className={styles.techStack__touchHint}>
+                          <Icon name="Hand" size="sm" />
+                          <span>Tap to flip</span>
                         </div>
-                        <h3 className={styles.techStack__cardTitle}>{tech.name}</h3>
-                        <p className={styles.techStack__cardDescription}>
-                          {tech.shortDescription}
-                        </p>
-                        <div className={styles.techStack__category}>
-                          <span className={styles.techStack__categoryTag}>
-                            {tech.category}
-                          </span>
-                        </div>
-                        {isTouchDevice && (
-                          <div className={styles.techStack__touchHint}>
+                      )}
+                    </div>
+
+                    <div className={styles.techStack__cardBack}>
+                      <h3 className={styles.techStack__cardTitle}>{tech.name}</h3>
+                      <p className={styles.techStack__cardDescription}>
+                        {tech.longDescription}
+                      </p>
+                      <div className={styles.techStack__cardActions}>
+                        {isTouchDevice ? (
+                          <>
                             <Icon name="Hand" size="sm" />
-                            <span>Tap to flip</span>
-                          </div>
+                            <span>Tap to flip back</span>
+                          </>
+                        ) : (
+                          <>
+                            <Icon name="MousePointer" size="sm" />
+                            <span>Hover to flip back</span>
+                          </>
                         )}
                       </div>
-                    </motion.div>
-
-                    {/* Back of card */}
-                    <motion.div
-                      className={styles.techStack__cardBack}
-                      animate={{
-                        rotateY: flippedCard === tech.id ? 0 : -180,
-                      }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      <div className={styles.techStack__cardContent}>
-                        <h3 className={styles.techStack__cardTitle}>{tech.name}</h3>
-                        <p className={styles.techStack__cardDescription}>
-                          {tech.longDescription}
-                        </p>
-                        <div className={styles.techStack__hoverHint}>
-                          {isTouchDevice ? (
-                            <>
-                              <Icon name="Hand" size="sm" />
-                              <span>Tap to flip back</span>
-                            </>
-                          ) : (
-                            <>
-                              <Icon name="MousePointer" size="sm" />
-                              <span>Hover to flip</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
+                    </div>
                   </div>
-                </motion.div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
-          {/* Right scroll button */}
-          {canScrollRight && (
-            <button
-              className={styles.techStack__scrollButton}
-              onClick={() => scrollCarousel('right')}
-              aria-label="Scroll right"
-              type="button"
-            >
-              <Icon name="ChevronRight" size="lg" />
-            </button>
-          )}
+          <button
+            className={`${styles.techStack__scrollButton} ${styles['techStack__scrollButton--right']}`}
+            onClick={scrollRight}
+            disabled={!canScrollRight}
+            aria-label="Scroll right"
+          >
+            <Icon name="ChevronRight" size="lg" />
+          </button>
         </div>
-
-        <motion.div
-          className={styles.techStack__categories}
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <h3 className={styles.techStack__categoriesTitle}>Categories</h3>
-          <div className={styles.techStack__categoryList}>
-            {['frontend', 'backend', 'database', 'devops', 'other'].map((category) => (
-              <span key={category} className={styles.techStack__categoryItem}>
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </span>
-            ))}
-          </div>
-        </motion.div>
       </div>
     </section>
   );
