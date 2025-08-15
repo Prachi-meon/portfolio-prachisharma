@@ -1,5 +1,3 @@
-import { IconName } from '@/components/atoms/Icon/Icon';
-
 export interface TechStack {
   id: string;
   name: string;
@@ -25,7 +23,7 @@ export interface Service {
   id: string;
   title: string;
   description: string;
-  icon: IconName;
+  icon: string;
   features: string[];
 }
 
@@ -39,7 +37,7 @@ export interface ContactForm {
 export interface SocialLink {
   name: string;
   url: string;
-  icon: IconName;
+  icon: string;
 }
 
 export interface NavigationItem {

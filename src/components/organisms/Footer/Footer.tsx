@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { Logo } from '@/components/molecules';
 import { Icon } from '@/components/atoms';
 import { SOCIAL_LINKS, SITE_CONFIG } from '@/utils/constants';
@@ -11,48 +11,15 @@ export interface FooterProps {
 }
 
 const Footer: React.FC<FooterProps> = ({ className = '' }) => {
-  const [isInView, setIsInView] = useState(false);
-  const footerRef = useRef<HTMLElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  // Scroll-driven animation effect
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsInView(true);
-            
-            // Add animation classes with delays
-            if (contentRef.current) {
-              setTimeout(() => {
-                contentRef.current?.classList.add(styles['footer__content--animated']);
-              }, 200);
-            }
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (footerRef.current) {
-      observer.observe(footerRef.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
   const footerClasses = [
     styles.footer,
     className,
   ].filter(Boolean).join(' ');
 
   return (
-    <footer ref={footerRef} className={footerClasses}>
+    <footer className={footerClasses}>
       <div className={styles.footer__container}>
-        <div ref={contentRef} className={styles.footer__content}>
+        <div className={styles.footer__content}>
           {/* Logo and Copyright */}
           <div className={styles.footer__brand}>
             <Logo className={styles.footer__logo} />
