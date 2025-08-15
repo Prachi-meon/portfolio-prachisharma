@@ -19,6 +19,14 @@
   &__header {
     text-align: center;
     margin-bottom: var(--spacing-16);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    
+    &--animated {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   
   &__title {
@@ -42,6 +50,14 @@
   &__grid {
     display: grid;
     gap: var(--spacing-8);
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    
+    &--animated {
+      opacity: 1;
+      transform: translateY(0);
+    }
     
     @media (min-width: 768px) {
       grid-template-columns: repeat(2, 1fr);
@@ -64,6 +80,14 @@
     transition: all var(--transition-normal);
     position: relative;
     overflow: hidden;
+    opacity: 0;
+    transform: translateY(50px) scale(0.95);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out, box-shadow var(--transition-normal);
+    
+    &--animated {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
     
     &:hover {
       transform: translateY(-8px);
@@ -149,6 +173,15 @@
 // Reduced motion support
 @media (prefers-reduced-motion: reduce) {
   .services {
+    &__header,
+    &__grid,
+    &__card {
+      animation: none;
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    
     &__card {
       transition: none;
       

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Input, Textarea, Icon } from '@/components/atoms';
 import { ContactForm } from '@/types';
 import { SITE_CONFIG, SOCIAL_LINKS } from '@/utils/constants';
@@ -19,6 +19,45 @@ const Contact: React.FC<ContactProps> = ({ className = '' }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [isInView, setIsInView] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Scroll-driven animation effect
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsInView(true);
+            
+            // Add animation classes with delays
+            if (headerRef.current) {
+              setTimeout(() => {
+                headerRef.current?.classList.add(styles['contact__header--animated']);
+              }, 200);
+            }
+            
+            if (contentRef.current) {
+              setTimeout(() => {
+                contentRef.current?.classList.add(styles['contact__content--animated']);
+              }, 400);
+            }
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -60,16 +99,16 @@ const Contact: React.FC<ContactProps> = ({ className = '' }) => {
   ].filter(Boolean).join(' ');
 
   return (
-    <section id="contact" className={contactClasses}>
+    <section ref={sectionRef} id="contact" className={contactClasses}>
       <div className={styles.contact__container}>
-        <div className={styles.contact__header}>
+        <div ref={headerRef} className={styles.contact__header}>
           <h2 className={styles.contact__title}>Get In Touch</h2>
           <p className={styles.contact__subtitle}>
             Ready to start a project or have a question? Let's talk!
           </p>
         </div>
 
-        <div className={styles.contact__content}>
+        <div ref={contentRef} className={styles.contact__content}>
           {/* Contact Information */}
           <div className={styles.contact__info}>
             <h3 className={styles.contact__infoTitle}>Contact Information</h3>
