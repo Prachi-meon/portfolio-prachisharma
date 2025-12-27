@@ -1,6 +1,6 @@
 .footer {
-  background-color: var(--color-secondary-900);
-  color: white;
+  background-color: var(--text);
+  color: var(--card-bg);
   padding: var(--spacing-16) 0 var(--spacing-8);
   
   &__container {
@@ -50,12 +50,12 @@
   }
   
   &__logo {
-    color: white;
+    color: var(--muted-text);
   }
   
   &__copyright {
     font-size: var(--font-size-sm);
-    color: var(--color-secondary-400);
+    color: var(--muted-text);
     margin: 0;
   }
   
@@ -63,7 +63,7 @@
   &__disclaimer {
     p {
       font-size: var(--font-size-sm);
-      color: var(--color-secondary-400);
+      color: var(--muted-text);
       line-height: var(--line-height-relaxed);
       margin: 0;
       max-width: 300px;
@@ -102,12 +102,12 @@
     font-size: var(--font-size-sm);
     
     svg {
-      color: var(--color-primary-400);
+      color: var(--button-primary-bg);
       flex-shrink: 0;
     }
     
     a {
-      color: var(--color-secondary-300);
+      color: var(--muted-text);
       text-decoration: none;
       transition: color var(--transition-fast);
       
@@ -128,15 +128,15 @@
     justify-content: center;
     width: 40px;
     height: 40px;
-    background-color: var(--color-secondary-800);
-    color: var(--color-secondary-300);
+    background-color: var(--card-bg);
+    color: var(--text);
     border-radius: var(--border-radius-lg);
     text-decoration: none;
     transition: all var(--transition-fast);
     
     &:hover {
-      background-color: var(--color-primary-600);
-      color: white;
+      background-color: var(--button-primary-text);
+      color: var(--button-primary-bg);
       transform: translateY(-2px);
     }
     

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import styles from './Logo.module.scss';
 
 export interface LogoProps {
@@ -10,10 +11,14 @@ export interface LogoProps {
 const Logo: React.FC<LogoProps> = ({ className = '' }) => {
   return (
     <div className={`${styles.logo} ${className}`}>
-      <div className={styles.logo__brand}>
-        <span className={styles.logo__name}>Prachi Sharma</span>
-        <span className={styles.logo__subtitle}>Full Stack Developer</span>
-      </div>
+      <Image
+        src="/logo.avif"
+        alt="Prachi Sharma logo"
+        width={40}
+        height={40}
+        className={styles.logo__image}
+        priority
+      />
     </div>
   );
 };

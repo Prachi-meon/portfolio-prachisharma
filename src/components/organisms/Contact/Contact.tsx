@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Input, Textarea, Icon } from '@/components/atoms';
 import { ContactForm } from '@/types';
-import { SITE_CONFIG, SOCIAL_LINKS } from '@/utils/constants';
+import { CONTACT_CONTENT, SITE_CONFIG, SOCIAL_LINKS } from '@/data/siteContent';
 import styles from './Contact.module.scss';
 
 export interface ContactProps {
@@ -72,7 +72,7 @@ const Contact: React.FC<ContactProps> = ({ className = '' }) => {
     setSubmitStatus('idle');
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('/api/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,16 +102,16 @@ const Contact: React.FC<ContactProps> = ({ className = '' }) => {
     <section ref={sectionRef} id="contact" className={contactClasses}>
       <div className={styles.contact__container}>
         <div ref={headerRef} className={styles.contact__header}>
-          <h2 className={styles.contact__title}>Get In Touch</h2>
+          <h2 className={styles.contact__title}>{CONTACT_CONTENT.title}</h2>
           <p className={styles.contact__subtitle}>
-            Ready to start a project or have a question? Let's talk!
+            {CONTACT_CONTENT.subtitle}
           </p>
         </div>
 
         <div ref={contentRef} className={styles.contact__content}>
           {/* Contact Information */}
           <div className={styles.contact__info}>
-            <h3 className={styles.contact__infoTitle}>Contact Information</h3>
+            <h3 className={styles.contact__infoTitle}>{CONTACT_CONTENT.infoTitle}</h3>
             <div className={styles.contact__infoItems}>
               <div className={styles.contact__infoItem}>
                 <Icon name="Mail" size="lg" />
@@ -139,7 +139,7 @@ const Contact: React.FC<ContactProps> = ({ className = '' }) => {
             </div>
 
             <div className={styles.contact__social}>
-              <h4>Follow Me</h4>
+              <h4>{CONTACT_CONTENT.socialTitle}</h4>
               <div className={styles.contact__socialLinks}>
                 {SOCIAL_LINKS.map((link) => (
                   <a
@@ -164,7 +164,7 @@ const Contact: React.FC<ContactProps> = ({ className = '' }) => {
                 <Input
                   type="text"
                   name="name"
-                  placeholder="Your Name"
+                  placeholder={CONTACT_CONTENT.form.namePlaceholder}
                   value={formData.name}
                   onChange={handleInputChange}
                   required
@@ -173,7 +173,7 @@ const Contact: React.FC<ContactProps> = ({ className = '' }) => {
                 <Input
                   type="email"
                   name="email"
-                  placeholder="Your Email"
+                  placeholder={CONTACT_CONTENT.form.emailPlaceholder}
                   value={formData.email}
                   onChange={handleInputChange}
                   required
@@ -184,7 +184,7 @@ const Contact: React.FC<ContactProps> = ({ className = '' }) => {
               <Input
                 type="tel"
                 name="phone"
-                placeholder="Your Phone (optional)"
+                placeholder={CONTACT_CONTENT.form.phonePlaceholder}
                 value={formData.phone}
                 onChange={handleInputChange}
                 fullWidth
@@ -192,7 +192,7 @@ const Contact: React.FC<ContactProps> = ({ className = '' }) => {
 
               <Textarea
                 name="purpose"
-                placeholder="Tell me about your project or question..."
+                placeholder={CONTACT_CONTENT.form.purposePlaceholder}
                 value={formData.purpose}
                 onChange={handleInputChange}
                 rows={6}
@@ -207,20 +207,20 @@ const Contact: React.FC<ContactProps> = ({ className = '' }) => {
                 loading={isSubmitting}
                 fullWidth
               >
-                Send Message
+                {CONTACT_CONTENT.form.submitLabel}
               </Button>
 
               {submitStatus === 'success' && (
                 <div className={`${styles.contact__status} ${styles['contact__status--success']}`}>
                   <Icon name="CheckCircle" size="sm" />
-                  <span>Message sent successfully! I'll get back to you soon.</span>
+                  <span>{CONTACT_CONTENT.status.success}</span>
                 </div>
               )}
 
               {submitStatus === 'error' && (
                 <div className={`${styles.contact__status} ${styles['contact__status--error']}`}>
                   <Icon name="AlertCircle" size="sm" />
-                  <span>Something went wrong. Please try again or contact me directly.</span>
+                  <span>{CONTACT_CONTENT.status.error}</span>
                 </div>
               )}
             </form>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from '@/components/atoms';
 import { NavigationItem } from '@/types';
-import { NAVIGATION_ITEMS } from '@/utils/constants';
+import { NAVIGATION_ITEMS } from '@/data/siteContent';
 import styles from './Navigation.module.scss';
 
 export interface NavigationProps {

@@ -1,0 +1,22 @@
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+
+  &:hover {
+    transform: translateY(-2px);
+    background-color: rgba(255,255,255,0.02);
+  }
+
+  .icon {
+    font-size: 18px;
+  }
+}

@@ -79,7 +79,7 @@
     }
 
     &:hover {
-      background-color: var(--color-secondary-100);
+      background-color: rgba(0,0,0,0.03);
     }
 
     &:focus {
@@ -136,7 +136,7 @@
     right: -100%;
     width: 280px;
     height: 100vh;
-    background-color: white;
+    background-color: var(--card-bg);
     box-shadow: var(--shadow-xl);
     z-index: var(--z-modal);
     transition: right var(--transition-normal);
@@ -203,7 +203,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--overlay-bg);
     z-index: calc(var(--z-modal) - 1);
     animation: fadeIn 0.3s ease-out;
   }

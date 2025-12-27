@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Logo } from '@/components/molecules';
-import { Navigation } from '@/components/molecules';
+import { Logo, Navigation, ThemeToggle } from '@/components/molecules';
 import styles from './Header.module.scss';
 
 export interface HeaderProps {
@@ -45,8 +44,14 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
   return (
     <header ref={headerRef} className={headerClasses}>
       <div ref={containerRef} className={styles.header__container}>
-        <Logo className={styles.header__logo} />
-        <Navigation className={styles.header__navigation} />
+        <div className={styles.header__brand}>
+          <Logo className={styles.header__logo} />
+          <span className={styles.header__title}>Prachi Sharma</span>
+        </div>
+        <div className={styles.header__controls}>
+          <Navigation className={styles.header__navigation} />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

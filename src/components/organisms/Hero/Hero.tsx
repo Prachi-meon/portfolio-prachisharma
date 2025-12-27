@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/atoms';
-import { SITE_CONFIG } from '@/utils/constants';
+import { HERO_CONTENT } from '@/data/siteContent';
 import styles from './Hero.module.scss';
 
 export interface HeroProps {
@@ -18,6 +19,10 @@ const Hero: React.FC<HeroProps> = ({ className = '' }) => {
   const visualRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const descThreshold = 180;
+  const isLongDesc = HERO_CONTENT.description && HERO_CONTENT.description.length > descThreshold;
+  const truncatedDesc = HERO_CONTENT.description?.slice(0, descThreshold).trim();
 
   const handleContactClick = () => {
     const contactSection = document.querySelector('#contact');
@@ -112,43 +117,81 @@ const Hero: React.FC<HeroProps> = ({ className = '' }) => {
         <div className={styles.hero__content}>
           <div ref={textRef} className={styles.hero__text}>
             <h1 ref={titleRef} className={styles.hero__title}>
-              Hi, I'm <span className={styles.hero__highlight}>{SITE_CONFIG.name}</span>
+              {HERO_CONTENT.greeting}{' '}
+              <span className={styles.hero__highlight}>{HERO_CONTENT.highlight}</span>
             </h1>
             
             <h2 ref={subtitleRef} className={styles.hero__subtitle}>
-              {SITE_CONFIG.title}
+              {HERO_CONTENT.subtitle}
             </h2>
             
-            <p ref={descriptionRef} className={styles.hero__description}>
-              {SITE_CONFIG.description}
-            </p>
+            <div className={styles.hero__descriptionWrap}>
+              <p
+                ref={descriptionRef}
+                className={styles.hero__description}
+              >
+                {isLongDesc && !isExpanded ? (
+                  <>
+                    {truncatedDesc}
+                    <button
+                      type="button"
+                      className={styles.hero__ellipsisInline}
+                      onClick={() => setIsExpanded((s) => !s)}
+                      aria-expanded={isExpanded}
+                      aria-label={isExpanded ? 'Show less description' : 'Show full description'}
+                    >
+                      ...
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {HERO_CONTENT.description}
+                    {isLongDesc && (
+                      <button
+                        type="button"
+                        className={styles.hero__ellipsisInline}
+                        onClick={() => setIsExpanded((s) => !s)}
+                        aria-expanded={isExpanded}
+                        aria-label={isExpanded ? 'Show less description' : 'Show full description'}
+                      >
+                        Show less
+                      </button>
+                    )}
+                  </>
+                )}
+              </p>
+            </div>
             
             <div ref={actionsRef} className={styles.hero__actions}>
               <Button
                 variant="primary"
                 size="lg"
                 onClick={handleContactClick}
-                aria-label="Get in touch"
+                aria-label={HERO_CONTENT.primaryCta.ariaLabel}
               >
-                Get in Touch
+                {HERO_CONTENT.primaryCta.label}
               </Button>
               
               <Button
                 variant="outline"
                 size="lg"
                 onClick={handleProjectsClick}
-                aria-label="View my projects"
+                aria-label={HERO_CONTENT.secondaryCta.ariaLabel}
               >
-                View Projects
+                {HERO_CONTENT.secondaryCta.label}
               </Button>
             </div>
           </div>
           
           <div ref={visualRef} className={styles.hero__visual}>
             <div className={styles.hero__image}>
-              <div className={styles.hero__imagePlaceholder}>
-                <span>PS</span>
-              </div>
+              <Image
+                src="/banner-image.png"
+                alt="Prachi Sharma - Hero banner"
+                fill
+                className={styles.hero__imagePlaceholder}
+                priority
+              />
             </div>
           </div>
         </div>
@@ -157,7 +200,7 @@ const Hero: React.FC<HeroProps> = ({ className = '' }) => {
           <div className={styles.hero__scrollIndicator}>
             <div className={styles.hero__scrollDot} />
           </div>
-          <span className={styles.hero__scrollText}>Scroll to explore</span>
+          <span className={styles.hero__scrollText}>{HERO_CONTENT.scrollHint}</span>
         </div>
       </div>
     </section>

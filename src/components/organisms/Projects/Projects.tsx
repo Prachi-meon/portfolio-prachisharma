@@ -2,8 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Icon } from '@/components/atoms';
-import { Project } from '@/types';
-import { PROJECTS } from '@/utils/constants';
+import { PROJECTS, PROJECTS_CONTENT } from '@/data/siteContent';
 import styles from './Projects.module.scss';
 
 export interface ProjectsProps {
@@ -12,6 +11,8 @@ export interface ProjectsProps {
 
 const Projects: React.FC<ProjectsProps> = ({ className = '' }) => {
   const [isInView, setIsInView] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(3);
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -51,6 +52,19 @@ const Projects: React.FC<ProjectsProps> = ({ className = '' }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const calculateVisible = () => {
+      const w = window.innerWidth;
+      if (w >= 1024) setVisibleCount(3);
+      else if (w >= 768) setVisibleCount(2);
+      else setVisibleCount(1);
+    };
+
+    calculateVisible();
+    window.addEventListener('resize', calculateVisible);
+    return () => window.removeEventListener('resize', calculateVisible);
+  }, []);
+
   const projectsClasses = [
     styles.projects,
     className,
@@ -60,15 +74,16 @@ const Projects: React.FC<ProjectsProps> = ({ className = '' }) => {
     <section ref={sectionRef} id="projects" className={projectsClasses}>
       <div className={styles.projects__container}>
         <div ref={headerRef} className={styles.projects__header}>
-          <h2 className={styles.projects__title}>Featured Projects</h2>
+          <h2 className={styles.projects__title}>{PROJECTS_CONTENT.title}</h2>
           <p className={styles.projects__subtitle}>
-            A showcase of my recent work and technical expertise
+            {PROJECTS_CONTENT.subtitle}
           </p>
         </div>
 
         <div ref={gridRef} className={styles.projects__grid}>
-          {PROJECTS.map((project, index) => (
+          {(showAll ? PROJECTS : PROJECTS.slice(0, visibleCount)).map((project, index) => (
             <div 
+              id={`project-${project.id}`}
               key={project.id} 
               className={`${styles.projects__card} ${isInView ? styles['projects__card--animated'] : ''}`}
               style={{ animationDelay: `${600 + index * 150}ms` }}
@@ -76,7 +91,7 @@ const Projects: React.FC<ProjectsProps> = ({ className = '' }) => {
               <div className={styles.projects__imageContainer}>
                 <div className={styles.projects__imagePlaceholder}>
                   <Icon name="Image" size="xl" />
-                  <span>{project.name}</span>
+                  <span>{project.title}</span>
                 </div>
                 <div className={styles.projects__overlay}>
                   <div className={styles.projects__overlayContent}>
@@ -86,22 +101,22 @@ const Projects: React.FC<ProjectsProps> = ({ className = '' }) => {
                       onClick={() => window.open(project.liveUrl, '_blank')}
                     >
                       <Icon name="ExternalLink" size="sm" />
-                      Live Demo
+                      {PROJECTS_CONTENT.actions.liveDemo}
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => window.open(project.githubUrl, '_blank')}
                     >
-                      <Icon name="GitHub" size="sm" />
-                      Source Code
+                      <Icon name="Github" size="sm" />
+                      {PROJECTS_CONTENT.actions.sourceCode}
                     </Button>
                   </div>
                 </div>
               </div>
 
               <div className={styles.projects__content}>
-                <h3 className={styles.projects__projectTitle}>{project.name}</h3>
+                <h3 className={styles.projects__projectTitle}>{project.title}</h3>
                 <p className={styles.projects__description}>{project.description}</p>
                 
                 <div className={styles.projects__meta}>
@@ -126,6 +141,29 @@ const Projects: React.FC<ProjectsProps> = ({ className = '' }) => {
             </div>
           ))}
         </div>
+        {PROJECTS.length > visibleCount && (
+            <div className={styles.projects__actions}>
+            <Button
+              variant="ghost"
+              size="md"
+              onClick={() => {
+                const next = !showAll;
+                setShowAll(next);
+                if (next) {
+                  setTimeout(() => {
+                    const id = PROJECTS[visibleCount]?.id;
+                    const el = id ? document.getElementById(`project-${id}`) : null;
+                    el?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                  }, 250);
+                } else {
+                  sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+            >
+              {showAll ? PROJECTS_CONTENT.actions.showLess : PROJECTS_CONTENT.actions.viewMore}
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );

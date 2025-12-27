@@ -1,6 +1,7 @@
 // CSS Custom Properties (Variables)
 :root {
   // Colors
+  --color-black: black;
   --color-primary-50: #eff6ff;
   --color-primary-100: #dbeafe;
   --color-primary-200: #bfdbfe;
@@ -101,6 +102,35 @@
   --z-modal: 1050;
   --z-popover: 1060;
   --z-tooltip: 1070;
+
+  // Semantic colors (light theme defaults)
+  --bg: #ffffff;
+  --text: var(--color-secondary-900);
+  --muted: var(--color-secondary-700);
+  --muted-text: var(--color-secondary-200);
+  --card-bg: #ffffff;
+  --card-border: var(--color-secondary-200);
+  --overlay-bg: rgba(0, 0, 0, 0.6);
+  --button-primary-bg: var(--color-primary-600);
+  --button-primary-text: #ffffff;
+  --focus-outline: var(--color-primary-400);
+  --card-shadow: var(--shadow-md);
+}
+
+/* Dark theme mappings - apply by adding the `dark` class on <html> or <body> */
+.dark,
+[data-theme="dark"] {
+  --bg: #071126;
+  --text: #e6eef8;
+  --muted: var(--color-secondary-400);
+  --muted-text: var(--color-secondary-900);
+  --card-bg: #071129;
+  --card-border: rgba(255,255,255,0.06);
+  --overlay-bg: rgba(3, 7, 18, 0.75);
+  --button-primary-bg: var(--color-primary-400);
+  --button-primary-text: #071129;
+  --focus-outline: var(--color-primary-200);
+  --card-shadow: 0 10px 30px #8f8f8f;
 }
 
 // CSS Reset
@@ -122,8 +152,8 @@ body {
   font-family: var(--font-family-sans);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal);
-  color: var(--color-secondary-900);
-  background-color: white;
+  color: var(--text);
+  background-color: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -193,7 +223,7 @@ input, textarea, select {
 
 // Focus styles for accessibility
 *:focus {
-  outline: 2px solid var(--color-primary-400);
+  outline: 2px solid var(--focus-outline);
   outline-offset: 2px;
 }
 
@@ -203,7 +233,7 @@ input, textarea, select {
   top: -40px;
   left: 6px;
   background: var(--color-primary-600);
-  color: white;
+  color: var(--button-primary-text);
   padding: 8px;
   text-decoration: none;
   border-radius: var(--border-radius-md);

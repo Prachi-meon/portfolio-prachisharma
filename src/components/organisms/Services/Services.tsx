@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Icon } from '@/components/atoms';
-import { Service } from '@/types';
-import { SERVICES } from '@/utils/constants';
+import { Icon, Button } from '@/components/atoms';
+import { SERVICES, SERVICES_CONTENT } from '@/data/siteContent';
 import styles from './Services.module.scss';
 
 export interface ServicesProps {
@@ -12,6 +11,8 @@ export interface ServicesProps {
 
 const Services: React.FC<ServicesProps> = ({ className = '' }) => {
   const [isInView, setIsInView] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(3);
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -51,6 +52,19 @@ const Services: React.FC<ServicesProps> = ({ className = '' }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const calculateVisible = () => {
+      const w = window.innerWidth;
+      if (w >= 1024) setVisibleCount(3);
+      else if (w >= 768) setVisibleCount(2);
+      else setVisibleCount(1);
+    };
+
+    calculateVisible();
+    window.addEventListener('resize', calculateVisible);
+    return () => window.removeEventListener('resize', calculateVisible);
+  }, []);
+
   const servicesClasses = [
     styles.services,
     className,
@@ -60,15 +74,16 @@ const Services: React.FC<ServicesProps> = ({ className = '' }) => {
     <section ref={sectionRef} id="services" className={servicesClasses}>
       <div className={styles.services__container}>
         <div ref={headerRef} className={styles.services__header}>
-          <h2 className={styles.services__title}>Services I Offer</h2>
+          <h2 className={styles.services__title}>{SERVICES_CONTENT.title}</h2>
           <p className={styles.services__subtitle}>
-            Comprehensive web development solutions tailored to your needs
+            {SERVICES_CONTENT.subtitle}
           </p>
         </div>
 
         <div ref={gridRef} className={styles.services__grid}>
-          {SERVICES.map((service, index) => (
+          {(showAll ? SERVICES : SERVICES.slice(0, visibleCount)).map((service, index) => (
             <div 
+              id={`service-${service.id}`}
               key={service.id} 
               className={`${styles.services__card} ${isInView ? styles['services__card--animated'] : ''}`}
               style={{ animationDelay: `${600 + index * 150}ms` } as React.CSSProperties}
@@ -91,6 +106,29 @@ const Services: React.FC<ServicesProps> = ({ className = '' }) => {
             </div>
           ))}
         </div>
+        {SERVICES.length > visibleCount && (
+          <div className={styles.services__actions}>
+            <Button
+              variant="ghost"
+              size="md"
+              onClick={() => {
+                const next = !showAll;
+                setShowAll(next);
+                if (next) {
+                  setTimeout(() => {
+                    const id = SERVICES[visibleCount]?.id;
+                    const el = id ? document.getElementById(`service-${id}`) : null;
+                    el?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                  }, 250);
+                } else {
+                  sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+            >
+              {showAll ? SERVICES_CONTENT.actions.showLess : SERVICES_CONTENT.actions.viewMore || 'View more'}
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );

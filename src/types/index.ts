@@ -4,6 +4,7 @@ export interface TechStack {
   id: string;
   name: string;
   logo: string;
+  icon: IconName;
   shortDescription: string;
   longDescription: string;
   category: 'frontend' | 'backend' | 'database' | 'devops' | 'other';

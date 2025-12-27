@@ -30,30 +30,30 @@
   padding: var(--spacing-3) var(--spacing-4);
   font-size: var(--font-size-base);
   font-family: inherit;
-  background-color: white;
-  color: var(--color-secondary-900);
+  background-color: var(--card-bg);
+  color: var(--text);
   transition: all var(--transition-normal);
   resize: vertical;
   min-height: 120px;
   
   &::placeholder {
-    color: var(--color-secondary-400);
+    color: var(--muted);
   }
   
   // States
   &:hover:not(:disabled) {
-    border-color: var(--color-secondary-400);
+    border-color: var(--card-border);
   }
   
   &:focus {
     outline: none;
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px var(--color-primary-100);
+    border-color: var(--button-primary-bg);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
   }
   
   &--disabled {
-    background-color: var(--color-secondary-100);
-    color: var(--color-secondary-500);
+    background-color: var(--card-bg);
+    color: var(--muted);
     cursor: not-allowed;
     
     &:hover {
