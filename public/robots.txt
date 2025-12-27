@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://prachisharma.com/sitemap.xml
+Sitemap: https://prachisharma.com/sitemap.xml  //need change
 
 # Disallow admin and API routes
 Disallow: /api/

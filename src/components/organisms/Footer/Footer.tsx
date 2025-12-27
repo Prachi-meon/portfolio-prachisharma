@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Logo } from '@/components/molecules';
 import { Icon } from '@/components/atoms';
-import { SOCIAL_LINKS, SITE_CONFIG } from '@/utils/constants';
+import { FOOTER_CONTENT, SOCIAL_LINKS, SITE_CONFIG } from '@/data/siteContent';
 import styles from './Footer.module.scss';
 
 export interface FooterProps {
@@ -64,7 +64,7 @@ const Footer: React.FC<FooterProps> = ({ className = '' }) => {
           {/* Disclaimer */}
           <div className={styles.footer__disclaimer}>
             <p>
-              Built with Next.js, TypeScript, and SASS. Designed for performance and accessibility.
+              {FOOTER_CONTENT.disclaimer}
             </p>
           </div>
 

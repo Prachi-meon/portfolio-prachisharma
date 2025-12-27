@@ -2,8 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Icon } from '@/components/atoms';
-import { TechStack as TechStackType } from '@/types';
-import { TECH_STACK } from '@/utils/constants';
+import { TECH_STACK, TECH_STACK_CONTENT } from '@/data/siteContent';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import styles from './TechStack.module.scss';
 
 export interface TechStackProps {
@@ -13,9 +13,8 @@ export interface TechStackProps {
 const TechStack: React.FC<TechStackProps> = ({ className = '' }) => {
   const [flippedCard, setFlippedCard] = useState<string | null>(null);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
-  const [isInView, setIsInView] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const sectionRef = useRef<HTMLElement>(null);
+  const { ref: sectionRef, isInView } = useScrollAnimation({ threshold: 0.2 });
   const headerRef = useRef<HTMLDivElement>(null);
   const carouselContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -26,41 +25,6 @@ const TechStack: React.FC<TechStackProps> = ({ className = '' }) => {
     updateScrollButtons();
   }, []);
 
-  // Scroll-driven animation effect
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsInView(true);
-            
-            // Add animation classes with delays
-            if (headerRef.current) {
-              setTimeout(() => {
-                headerRef.current?.classList.add(styles['techStack__header--animated']);
-              }, 200);
-            }
-            
-            if (carouselContainerRef.current) {
-              setTimeout(() => {
-                carouselContainerRef.current?.classList.add(styles['techStack__carousel--animated']);
-              }, 400);
-            }
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
   const updateScrollButtons = () => {
     if (carouselRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
@@ -69,15 +33,27 @@ const TechStack: React.FC<TechStackProps> = ({ className = '' }) => {
     }
   };
 
+  const getCardScrollAmount = () => {
+    if (!carouselRef.current) return 300;
+    const firstCard = carouselRef.current.querySelector(`.${styles.techStack__card}`) as HTMLElement | null;
+    if (!firstCard) return 300;
+    const rect = firstCard.getBoundingClientRect();
+    const style = window.getComputedStyle(firstCard);
+    const marginRight = parseFloat(style.marginRight || '0');
+    return Math.round(rect.width + marginRight);
+  };
+
   const scrollLeft = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+      const amount = getCardScrollAmount();
+      carouselRef.current.scrollBy({ left: -amount, behavior: 'smooth' });
     }
   };
 
   const scrollRight = () => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+      const amount = getCardScrollAmount();
+      carouselRef.current.scrollBy({ left: amount, behavior: 'smooth' });
     }
   };
 
@@ -104,17 +80,35 @@ const TechStack: React.FC<TechStackProps> = ({ className = '' }) => {
     className,
   ].filter(Boolean).join(' ');
 
+  useEffect(() => {
+    const handleResize = () => {
+      updateScrollButtons();
+    };
+
+    window.addEventListener('resize', handleResize);
+    // in case fonts/images change layout after mount
+    setTimeout(updateScrollButtons, 300);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <section ref={sectionRef} id="tech-stack" className={techStackClasses}>
       <div className={styles.techStack__container}>
-        <div ref={headerRef} className={styles.techStack__header}>
-          <h2 className={styles.techStack__title}>Tech Stack</h2>
+        <div
+          ref={headerRef}
+          className={`${styles.techStack__header} ${isInView ? styles['techStack__header--animated'] : ''}`}
+        >
+          <h2 className={styles.techStack__title}>{TECH_STACK_CONTENT.title}</h2>
           <p className={styles.techStack__subtitle}>
-            Technologies and tools I work with
+            {TECH_STACK_CONTENT.subtitle}
           </p>
         </div>
 
-        <div ref={carouselContainerRef} className={styles.techStack__carousel}>
+        <div
+          ref={carouselContainerRef}
+          className={`${styles.techStack__carousel} ${isInView ? styles['techStack__carousel--animated'] : ''}`}
+        >
           <button
             className={`${styles.techStack__scrollButton} ${styles['techStack__scrollButton--left']}`}
             onClick={scrollLeft}
@@ -168,7 +162,7 @@ const TechStack: React.FC<TechStackProps> = ({ className = '' }) => {
                       {isTouchDevice && (
                         <div className={styles.techStack__touchHint}>
                           <Icon name="Hand" size="sm" />
-                          <span>Tap to flip</span>
+                          <span>{TECH_STACK_CONTENT.touchHint}</span>
                         </div>
                       )}
                     </div>
@@ -182,12 +176,12 @@ const TechStack: React.FC<TechStackProps> = ({ className = '' }) => {
                         {isTouchDevice ? (
                           <>
                             <Icon name="Hand" size="sm" />
-                            <span>Tap to flip back</span>
+                            <span>{TECH_STACK_CONTENT.flipBackTouch}</span>
                           </>
                         ) : (
                           <>
                             <Icon name="MousePointer" size="sm" />
-                            <span>Hover to flip back</span>
+                            <span>{TECH_STACK_CONTENT.flipBackHover}</span>
                           </>
                         )}
                       </div>

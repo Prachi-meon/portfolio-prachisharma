@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   z-index: var(--z-sticky);
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid transparent;
   transition: all var(--transition-normal);
@@ -17,9 +17,20 @@
   }
   
   &--scrolled {
-    background-color: rgba(255, 255, 255, 0.98);
-    border-bottom-color: var(--color-secondary-200);
+    background-color: rgba(255, 255, 255, 0.8);
+    border-bottom-color: var(--card-border);
     box-shadow: var(--shadow-md);
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+  }
+
+  &__title{
+    color: var(--color-primary-600);
+    font-weight: 700;
   }
   
   &__container {
@@ -54,6 +65,12 @@
   
   &__navigation {
     flex-shrink: 0;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
   }
 }
 
