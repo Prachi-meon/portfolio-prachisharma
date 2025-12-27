@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Icon } from '@/components/atoms';
 import { Project } from '@/types';
 import { PROJECTS } from '@/utils/constants';
@@ -11,24 +11,68 @@ export interface ProjectsProps {
 }
 
 const Projects: React.FC<ProjectsProps> = ({ className = '' }) => {
+  const [isInView, setIsInView] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  // Scroll-driven animation effect
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsInView(true);
+            
+            // Add animation classes with delays
+            if (headerRef.current) {
+              setTimeout(() => {
+                headerRef.current?.classList.add(styles['projects__header--animated']);
+              }, 200);
+            }
+            
+            if (gridRef.current) {
+              setTimeout(() => {
+                gridRef.current?.classList.add(styles['projects__grid--animated']);
+              }, 400);
+            }
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   const projectsClasses = [
     styles.projects,
     className,
   ].filter(Boolean).join(' ');
 
   return (
-    <section id="projects" className={projectsClasses}>
+    <section ref={sectionRef} id="projects" className={projectsClasses}>
       <div className={styles.projects__container}>
-        <div className={styles.projects__header}>
+        <div ref={headerRef} className={styles.projects__header}>
           <h2 className={styles.projects__title}>Featured Projects</h2>
           <p className={styles.projects__subtitle}>
             A showcase of my recent work and technical expertise
           </p>
         </div>
 
-        <div className={styles.projects__grid}>
-          {PROJECTS.map((project) => (
-            <div key={project.id} className={styles.projects__card}>
+        <div ref={gridRef} className={styles.projects__grid}>
+          {PROJECTS.map((project, index) => (
+            <div 
+              key={project.id} 
+              className={`${styles.projects__card} ${isInView ? styles['projects__card--animated'] : ''}`}
+              style={{ animationDelay: `${600 + index * 150}ms` }}
+            >
               <div className={styles.projects__imageContainer}>
                 <div className={styles.projects__imagePlaceholder}>
                   <Icon name="Image" size="xl" />

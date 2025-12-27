@@ -13,13 +13,52 @@ export interface TechStackProps {
 const TechStack: React.FC<TechStackProps> = ({ className = '' }) => {
   const [flippedCard, setFlippedCard] = useState<string | null>(null);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isInView, setIsInView] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const carouselContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
   useEffect(() => {
     setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
     updateScrollButtons();
+  }, []);
+
+  // Scroll-driven animation effect
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsInView(true);
+            
+            // Add animation classes with delays
+            if (headerRef.current) {
+              setTimeout(() => {
+                headerRef.current?.classList.add(styles['techStack__header--animated']);
+              }, 200);
+            }
+            
+            if (carouselContainerRef.current) {
+              setTimeout(() => {
+                carouselContainerRef.current?.classList.add(styles['techStack__carousel--animated']);
+              }, 400);
+            }
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   const updateScrollButtons = () => {
@@ -66,16 +105,16 @@ const TechStack: React.FC<TechStackProps> = ({ className = '' }) => {
   ].filter(Boolean).join(' ');
 
   return (
-    <section id="tech-stack" className={techStackClasses}>
+    <section ref={sectionRef} id="tech-stack" className={techStackClasses}>
       <div className={styles.techStack__container}>
-        <div className={styles.techStack__header}>
+        <div ref={headerRef} className={styles.techStack__header}>
           <h2 className={styles.techStack__title}>Tech Stack</h2>
           <p className={styles.techStack__subtitle}>
             Technologies and tools I work with
           </p>
         </div>
 
-        <div className={styles.techStack__carousel}>
+        <div ref={carouselContainerRef} className={styles.techStack__carousel}>
           <button
             className={`${styles.techStack__scrollButton} ${styles['techStack__scrollButton--left']}`}
             onClick={scrollLeft}
@@ -91,17 +130,19 @@ const TechStack: React.FC<TechStackProps> = ({ className = '' }) => {
             onScroll={updateScrollButtons}
           >
             <div className={styles.techStack__cards}>
-              {TECH_STACK.map((tech) => {
+              {TECH_STACK.map((tech, index) => {
                 const isFlipped = flippedCard === tech.id;
                 const cardClasses = [
                   styles.techStack__card,
                   isFlipped && styles['techStack__card--flipped'],
+                  isInView && styles['techStack__card--animated'],
                 ].filter(Boolean).join(' ');
 
                 return (
                   <div
                     key={tech.id}
                     className={cardClasses}
+                    style={{ animationDelay: `${600 + index * 100}ms` }}
                     onClick={() => handleCardClick(tech.id)}
                     onMouseEnter={() => handleCardMouseEnter(tech.id)}
                     onMouseLeave={handleCardMouseLeave}
