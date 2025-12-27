@@ -1,10 +1,9 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Logo } from '@/components/molecules';
 import { Icon } from '@/components/atoms';
-import { SITE_CONFIG, SOCIAL_LINKS } from '@/utils/constants';
+import { SOCIAL_LINKS, SITE_CONFIG } from '@/utils/constants';
 import styles from './Footer.module.scss';
 
 export interface FooterProps {
@@ -12,92 +11,59 @@ export interface FooterProps {
 }
 
 const Footer: React.FC<FooterProps> = ({ className = '' }) => {
-  const currentYear = new Date().getFullYear();
-
   const footerClasses = [
     styles.footer,
     className,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  ].filter(Boolean).join(' ');
 
   return (
     <footer className={footerClasses}>
       <div className={styles.footer__container}>
         <div className={styles.footer__content}>
-          {/* Left: Logo & Copyright */}
-          <motion.div
-            className={styles.footer__left}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <Logo size="sm" href="#" />
+          {/* Logo and Copyright */}
+          <div className={styles.footer__brand}>
+            <Logo className={styles.footer__logo} />
             <p className={styles.footer__copyright}>
-              © {currentYear} {SITE_CONFIG.name}. All rights reserved.
+              © {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.
             </p>
-          </motion.div>
+          </div>
 
-          {/* Center: Disclaimer */}
-          <motion.div
-            className={styles.footer__center}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <p className={styles.footer__disclaimer}>
-              Built with Next.js, TypeScript, and SASS. Designed with accessibility and performance in mind.
+          {/* Disclaimer */}
+          <div className={styles.footer__disclaimer}>
+            <p>
+              Built with Next.js, TypeScript, and SASS. Designed for performance and accessibility.
             </p>
-          </motion.div>
+          </div>
 
-          {/* Right: Contact & Social */}
-          <motion.div
-            className={styles.footer__right}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <div className={styles.footer__contact}>
-              <a href={`mailto:${SITE_CONFIG.email}`} className={styles.footer__email}>
-                {SITE_CONFIG.email}
-              </a>
-              <a href={`tel:${SITE_CONFIG.phone}`} className={styles.footer__phone}>
-                {SITE_CONFIG.phone}
-              </a>
+          {/* Contact and Social */}
+          <div className={styles.footer__contact}>
+            <div className={styles.footer__contactInfo}>
+              <div className={styles.footer__contactItem}>
+                <Icon name="Mail" size="sm" />
+                <a href={`mailto:${SITE_CONFIG.email}`}>{SITE_CONFIG.email}</a>
+              </div>
+              <div className={styles.footer__contactItem}>
+                <Icon name="Phone" size="sm" />
+                <a href={`tel:${SITE_CONFIG.phone}`}>{SITE_CONFIG.phone}</a>
+              </div>
             </div>
-            
+
             <div className={styles.footer__social}>
-              {SOCIAL_LINKS.map((social) => (
+              {SOCIAL_LINKS.map((link) => (
                 <a
-                  key={social.name}
-                  href={social.url}
+                  key={link.name}
+                  href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.footer__socialLink}
-                  aria-label={`Visit ${social.name}`}
+                  aria-label={`Visit ${link.name}`}
                 >
-                  <Icon name={social.icon as any} size="sm" />
+                  <Icon name={link.icon} size="md" />
                 </a>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
-
-        <motion.div
-          className={styles.footer__bottom}
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-        >
-          <div className={styles.footer__divider} />
-          <p className={styles.footer__bottomText}>
-            Made with ❤️ by {SITE_CONFIG.name}
-          </p>
-        </motion.div>
       </div>
     </footer>
   );

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Button, Input, Textarea, Icon } from '@/components/atoms';
 import { ContactForm } from '@/types';
 import { SITE_CONFIG, SOCIAL_LINKS } from '@/utils/constants';
@@ -21,20 +20,11 @@ const Contact: React.FC<ContactProps> = ({ className = '' }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const contactClasses = [
-    styles.contact,
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const handleInputChange = (field: keyof ContactForm) => (
+  const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: e.target.value,
-    }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,36 +54,25 @@ const Contact: React.FC<ContactProps> = ({ className = '' }) => {
     }
   };
 
+  const contactClasses = [
+    styles.contact,
+    className,
+  ].filter(Boolean).join(' ');
+
   return (
     <section id="contact" className={contactClasses}>
       <div className={styles.contact__container}>
-        <motion.div
-          className={styles.contact__header}
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
+        <div className={styles.contact__header}>
           <h2 className={styles.contact__title}>Get In Touch</h2>
           <p className={styles.contact__subtitle}>
-            Ready to start your next project? Let's discuss how I can help bring your ideas to life.
+            Ready to start a project or have a question? Let's talk!
           </p>
-        </motion.div>
+        </div>
 
         <div className={styles.contact__content}>
           {/* Contact Information */}
-          <motion.div
-            className={styles.contact__info}
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <h3 className={styles.contact__infoTitle}>Let's Connect</h3>
-            <p className={styles.contact__infoDescription}>
-              I'm always open to discussing new opportunities, interesting projects, and creative ideas.
-            </p>
-
+          <div className={styles.contact__info}>
+            <h3 className={styles.contact__infoTitle}>Contact Information</h3>
             <div className={styles.contact__infoItems}>
               <div className={styles.contact__infoItem}>
                 <Icon name="Mail" size="lg" />
@@ -123,104 +102,90 @@ const Contact: React.FC<ContactProps> = ({ className = '' }) => {
             <div className={styles.contact__social}>
               <h4>Follow Me</h4>
               <div className={styles.contact__socialLinks}>
-                {SOCIAL_LINKS.map((social) => (
+                {SOCIAL_LINKS.map((link) => (
                   <a
-                    key={social.name}
-                    href={social.url}
+                    key={link.name}
+                    href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={styles.contact__socialLink}
-                    aria-label={`Visit ${social.name}`}
+                    aria-label={`Visit ${link.name}`}
                   >
-                    <Icon name={social.icon as any} size="md" />
+                    <Icon name={link.icon} size="md" />
                   </a>
                 ))}
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Contact Form */}
-          <motion.form
-            className={styles.contact__form}
-            onSubmit={handleSubmit}
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <div className={styles.contact__formRow}>
+          <div className={styles.contact__form}>
+            <form onSubmit={handleSubmit} className={styles.contact__formContent}>
+              <div className={styles.contact__formRow}>
+                <Input
+                  type="text"
+                  name="name"
+                  placeholder="Your Name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                  fullWidth
+                />
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="Your Email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  fullWidth
+                />
+              </div>
+
               <Input
-                label="Name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange('name')}
+                type="tel"
+                name="phone"
+                placeholder="Your Phone (optional)"
+                value={formData.phone}
+                onChange={handleInputChange}
+                fullWidth
+              />
+
+              <Textarea
+                name="purpose"
+                placeholder="Tell me about your project or question..."
+                value={formData.purpose}
+                onChange={handleInputChange}
+                rows={6}
                 required
                 fullWidth
               />
-              <Input
-                label="Email"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange('email')}
-                required
+
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                loading={isSubmitting}
                 fullWidth
-              />
-            </div>
-
-            <Input
-              label="Phone"
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange('phone')}
-              fullWidth
-            />
-
-            <Textarea
-              label="Message"
-              name="purpose"
-              value={formData.purpose}
-              onChange={handleInputChange('purpose')}
-              rows={6}
-              placeholder="Tell me about your project, timeline, and any specific requirements..."
-              required
-              fullWidth
-            />
-
-            {submitStatus === 'success' && (
-              <motion.div
-                className={styles.contact__success}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
               >
-                <Icon name="CheckCircle" size="sm" />
-                <span>Message sent successfully! I'll get back to you soon.</span>
-              </motion.div>
-            )}
+                Send Message
+              </Button>
 
-            {submitStatus === 'error' && (
-              <motion.div
-                className={styles.contact__error}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <Icon name="AlertCircle" size="sm" />
-                <span>Something went wrong. Please try again or contact me directly.</span>
-              </motion.div>
-            )}
+              {submitStatus === 'success' && (
+                <div className={`${styles.contact__status} ${styles['contact__status--success']}`}>
+                  <Icon name="CheckCircle" size="sm" />
+                  <span>Message sent successfully! I'll get back to you soon.</span>
+                </div>
+              )}
 
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              loading={isSubmitting}
-              fullWidth
-              aria-label="Send message"
-            >
-              {isSubmitting ? 'Sending...' : 'Send Message'}
-            </Button>
-          </motion.form>
+              {submitStatus === 'error' && (
+                <div className={`${styles.contact__status} ${styles['contact__status--error']}`}>
+                  <Icon name="AlertCircle" size="sm" />
+                  <span>Something went wrong. Please try again or contact me directly.</span>
+                </div>
+              )}
+            </form>
+          </div>
         </div>
       </div>
     </section>

@@ -1,70 +1,59 @@
 .logo {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--spacing-1);
-  
-  &__link {
-    text-decoration: none;
-    color: inherit;
+  align-items: center;
+  cursor: pointer;
+  transition: transform var(--transition-normal);
+
+  &:hover {
+    transform: scale(1.05);
   }
-  
-  &__text {
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__name {
+    font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
     color: var(--color-primary-600);
-    line-height: 1;
+    line-height: 1.2;
+    transition: color var(--transition-fast);
+
+    .logo:hover & {
+      color: var(--color-primary-700);
+    }
   }
-  
+
   &__subtitle {
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm);
     color: var(--color-secondary-600);
-    font-weight: var(--font-weight-normal);
-    line-height: 1;
-  }
-  
-  // Sizes
-  &--sm {
-    .logo__text {
-      font-size: var(--font-size-lg);
-    }
-    
-    .logo__subtitle {
-      font-size: 10px;
-    }
-  }
-  
-  &--md {
-    .logo__text {
-      font-size: var(--font-size-xl);
-    }
-    
-    .logo__subtitle {
-      font-size: var(--font-size-xs);
-    }
-  }
-  
-  &--lg {
-    .logo__text {
-      font-size: var(--font-size-2xl);
-    }
-    
-    .logo__subtitle {
-      font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.2;
+    transition: color var(--transition-fast);
+
+    .logo:hover & {
+      color: var(--color-secondary-700);
     }
   }
 }
 
-// Responsive adjustments
-@media (max-width: 768px) {
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
   .logo {
-    &--lg {
-      .logo__text {
-        font-size: var(--font-size-xl);
-      }
-      
-      .logo__subtitle {
-        font-size: var(--font-size-xs);
-      }
+    transition: none;
+    
+    &:hover {
+      transform: none;
+    }
+    
+    &:active {
+      transform: none;
     }
   }
 }

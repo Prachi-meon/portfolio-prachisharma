@@ -1,73 +1,81 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { forwardRef } from 'react';
 import styles from './Button.module.scss';
 
-export interface ButtonProps {
-  children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
-  disabled?: boolean;
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+export type ButtonSize = 'sm' | 'md' | 'lg';
+
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   loading?: boolean;
   fullWidth?: boolean;
-  onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
+  children: React.ReactNode;
   className?: string;
-  'aria-label'?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({
-  children,
-  variant = 'primary',
-  size = 'md',
-  disabled = false,
-  loading = false,
-  fullWidth = false,
-  onClick,
-  type = 'button',
-  className = '',
-  'aria-label': ariaLabel,
-}) => {
-  const buttonClasses = [
-    styles.button,
-    styles[`button--${variant}`],
-    styles[`button--${size}`],
-    fullWidth && styles['button--full-width'],
-    disabled && styles['button--disabled'],
-    loading && styles['button--loading'],
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      variant = 'primary',
+      size = 'md',
+      loading = false,
+      fullWidth = false,
+      children,
+      className = '',
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    const buttonClasses = [
+      styles.button,
+      styles[`button--${variant}`],
+      styles[`button--${size}`],
+      fullWidth && styles['button--full-width'],
+      loading && styles['button--loading'],
+      className,
+    ]
+      .filter(Boolean)
+      .join(' ');
 
-  const handleClick = () => {
-    if (!disabled && !loading && onClick) {
-      onClick();
-    }
-  };
+    const isDisabled = disabled || loading;
 
-  return (
-    <motion.button
-      className={buttonClasses}
-      onClick={handleClick}
-      type={type}
-      disabled={disabled || loading}
-      aria-label={ariaLabel}
-      whileHover={{ scale: disabled || loading ? 1 : 1.02 }}
-      whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
-      transition={{ duration: 0.2 }}
-    >
-      {loading && (
-        <motion.div
-          className={styles.button__loader}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-        />
-      )}
-      <span className={styles.button__content}>{children}</span>
-    </motion.button>
-  );
-};
+    return (
+      <button
+        ref={ref}
+        className={buttonClasses}
+        disabled={isDisabled}
+        {...props}
+      >
+        <span className={styles.button__content}>
+          {loading && (
+            <span className={styles.button__loader}>
+              <svg
+                className={styles.button__spinner}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className={styles.button__spinnerCircle}
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+              </svg>
+            </span>
+          )}
+          {children}
+        </span>
+      </button>
+    );
+  }
+);
+
+Button.displayName = 'Button';
 
 export default Button;
